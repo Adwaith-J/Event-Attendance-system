@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -19,9 +18,7 @@ app.use(express.json());
 
 // MongoDB Connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    dbName: "eventDB", // optional: give your database a name
-  })
+  .connect(process.env.MONGO_URI, { dbName: "eventDB" })
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
@@ -33,10 +30,12 @@ app.use("/api/export", exportRoutes);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.static(path.join(__dirname, "build")));
+// Serve static files from React build
+app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+// Catch-all route to serve React
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
 });
 
 // Start Server
