@@ -27,12 +27,10 @@ const frontendBuildPath = path.join(__dirname, "../frontend/build");
 
 app.use(express.static(frontendBuildPath));
 
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api")) return next();
+app.get("/*", (req, res) => {
+  if (req.path.startsWith("/api")) return res.status(404).send("API route not found");
   res.sendFile(path.join(frontendBuildPath, "index.html"));
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
