@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 
 import participantRoutes from "./routes/participants.js";
 import exportRoutes from "./routes/export.js";
-import qrRoutes from "./routes/qr.js";
+import qrRoutes from "./routes/scan.js";
 
 dotenv.config();
 const app = express();
