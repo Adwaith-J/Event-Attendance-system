@@ -4,8 +4,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+
 import participantRoutes from "./routes/participants.js";
 import exportRoutes from "./routes/export.js";
+import qrRoutes from "./routes/qr.js";
 
 dotenv.config();
 const app = express();
@@ -13,13 +15,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error("MongoDB Connection Error:", err));
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+
 
 app.use("/api/participants", participantRoutes);
 app.use("/api/export", exportRoutes);
+app.use("/api/qr", qrRoutes);
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,5 +37,6 @@ app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(frontendBuildPath, "index.html"));
 });
 
+
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

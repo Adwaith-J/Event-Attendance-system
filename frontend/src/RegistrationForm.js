@@ -4,9 +4,12 @@ const RegistrationForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [qr, setQr] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setQr("");
 
     try {
       const res = await fetch("/api/participants", {
@@ -23,6 +26,11 @@ const RegistrationForm = () => {
         setMessage("✅ " + data.message);
         setName("");
         setEmail("");
+
+      
+        const qrRes = await fetch(`/api/qr/${data.participant.registrationId}`);
+        const qrData = await qrRes.json();
+        setQr(qrData.qr);
       }
     } catch (err) {
       console.error("Error registering participant:", err);
@@ -31,7 +39,7 @@ const RegistrationForm = () => {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "20px auto" }}>
+    <div style={{ maxWidth: "400px", margin: "20px auto", textAlign: "center" }}>
       <h2>Event Registration</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -54,7 +62,32 @@ const RegistrationForm = () => {
           Register
         </button>
       </form>
+
       {message && <p style={{ marginTop: "10px" }}>{message}</p>}
+
+      {qr && (
+        <div style={{ marginTop: "20px" }}>
+          <h4>Your QR Code</h4>
+          <img src={qr} alt="QR Code" style={{ width: "200px" }} />
+        </div>
+      )}
+
+      <div style={{ marginTop: "20px" }}>
+        <a
+          href="/api/export"
+          download
+          style={{
+            display: "inline-block",
+            padding: "10px 15px",
+            background: "#007bff",
+            color: "white",
+            borderRadius: "5px",
+            textDecoration: "none",
+          }}
+        >
+          ⬇️ Download Excel
+        </a>
+      </div>
     </div>
   );
 };
