@@ -1,42 +1,62 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { QRCodeSVG } from "qrcode.react";
 
-function RegistrationForm() {
+const RegistrationForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [qrValue, setQrValue] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await axios.post("http://localhost:4000/api/participants", { name, email });
-      alert(res.data.message);
-      setQrValue(res.data.participant.registrationId);
-      setName("");
-      setEmail("");
+      const res = await fetch("/api/participants", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage("❌ " + (data.message || "Error registering participant"));
+      } else {
+        setMessage("✅ " + data.message);
+        setName("");
+        setEmail("");
+      }
     } catch (err) {
-      alert(err.response?.data?.message || "Error registering participant");
+      console.error("Error registering participant:", err);
+      setMessage("❌ Something went wrong");
     }
   };
 
   return (
-    <div>
-      <h2>Register Participant</h2>
+    <div style={{ maxWidth: "400px", margin: "20px auto" }}>
+      <h2>Event Registration</h2>
       <form onSubmit={handleSubmit}>
-        <input placeholder="Name" value={name} onChange={e => setName(e.target.value)} required />
-        <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <button type="submit">Register</button>
+        <input
+          type="text"
+          placeholder="Enter name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          style={{ display: "block", width: "100%", marginBottom: "10px" }}
+        />
+        <input
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{ display: "block", width: "100%", marginBottom: "10px" }}
+        />
+        <button type="submit" style={{ width: "100%", padding: "10px" }}>
+          Register
+        </button>
       </form>
-
-      {qrValue && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>QR Code:</h3>
-          <QRCodeSVG value={qrValue} size={150} />
-        </div>
-      )}
+      {message && <p style={{ marginTop: "10px" }}>{message}</p>}
     </div>
   );
-}
+};
 
 export default RegistrationForm;
