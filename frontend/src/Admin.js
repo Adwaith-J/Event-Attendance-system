@@ -4,13 +4,14 @@ import "./Admin.css";
 function Admin() {
   const [participants, setParticipants] = useState([]);
 
-  // Fetch participants from backend
+  
   useEffect(() => {
-    fetch("http://localhost:4000/api/participants")
-      .then((res) => res.json())
-      .then((data) => setParticipants(data))
-      .catch((err) => console.error("Error fetching participants:", err));
-  }, []);
+  fetch("/api/participants")
+    .then((res) => res.json())
+    .then((data) => setParticipants(data))
+    .catch((err) => console.error("Error fetching participants:", err));
+}, []);
+
 
   return (
     <div className="dashboard-container">
